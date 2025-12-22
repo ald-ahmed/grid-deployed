@@ -1,0 +1,47 @@
+{
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.fontSize": 12,
+  "editor.fontSize": 12,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/yarn.lock": true,
+    "**/backend/node_modules": true,
+    "**/frontend/node_modules": true,
+    "**/backend/dist": true,
+    "**/docs": true,
+    "**/.yarn": true,
+    "**/shared": false,
+    "dist": true,
+    ".github": true,
+    ".devcontainer": true,
+    ".vscode": true,
+    ".git": true,
+    ".dockerignore": true,
+    "CODEOWNERS": true,
+    "tsconfig.base.json": true,
+    "tsconfig.json": true,
+    ".yarnrc.yml": true,
+    ".gitignore": true,
+    ".gitattributes": true,
+    "**/.next": true,
+    "**/*.map": true,
+    "**/postcss.config.*": true,
+    "**/next.config.*": true,
+    "**/next-env.d.ts": true,
+    "**/tailwind.config.*": true,
+    "**/tsconfig*.json": true,
+    "**/nest-cli.json": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/yarn.lock": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

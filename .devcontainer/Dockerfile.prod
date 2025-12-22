@@ -1,0 +1,77 @@
+# syntax=docker/dockerfile:1.4
+
+# Stage 1: Dependencies installer
+FROM node:22-alpine AS deps
+WORKDIR /app
+
+# Install build dependencies only when needed
+RUN --mount=type=cache,id=s/3b0be839-b929-4c62-85af-6d7ff96e50a2-apk-cache,target=/var/cache/apk \
+    ln -s /var/cache/apk /etc/apk/cache && \
+    apk add python3 make g++ libc6-compat
+
+# Enable yarn 4
+RUN corepack enable && corepack prepare yarn@4.0.2 --activate
+
+# Copy package files for better caching
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY test-harness/package.json ./test-harness/
+
+# Install dependencies with cache mount for faster rebuilds
+# Ensure all workspace directories exist before install
+RUN mkdir -p backend frontend test-harness
+RUN --mount=type=cache,id=s/3b0be839-b929-4c62-85af-6d7ff96e50a2-yarn-cache,target=/root/.yarn \
+    YARN_CACHE_FOLDER=/root/.yarn \
+    yarn install --immutable --inline-builds
+
+# Stage 2: Builder
+FROM node:22-alpine AS builder
+WORKDIR /app
+
+# Install only essential runtime tools
+RUN --mount=type=cache,id=s/3b0be839-b929-4c62-85af-6d7ff96e50a2-apk-builder-cache,target=/var/cache/apk \
+    ln -s /var/cache/apk /etc/apk/cache && \
+    apk add bash git libc6-compat
+
+# Enable yarn 4
+RUN corepack enable && corepack prepare yarn@4.0.2 --activate
+
+# Copy package files and installed dependencies from deps stage
+COPY --from=deps /app ./
+
+# Copy source code (this will add the actual source files)
+COPY . .
+
+# Optional: Build frontend if needed for production
+# RUN yarn workspace ag-grid-challenge-frontend build
+
+# Stage 3: Production runner
+FROM node:22-alpine AS runner
+WORKDIR /workspaces/grid
+
+# Install only runtime essentials (no Chromium unless needed for Playwright)
+RUN --mount=type=cache,id=s/3b0be839-b929-4c62-85af-6d7ff96e50a2-apk-runtime-cache,target=/var/cache/apk \
+    ln -s /var/cache/apk /etc/apk/cache && \
+    apk add bash git sudo libc6-compat && \
+    echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Enable yarn 4 for runtime
+RUN corepack enable && corepack prepare yarn@4.0.2 --activate
+
+# Copy everything from builder with proper ownership
+COPY --from=builder --chown=node:node /app ./
+
+# Create .yarn directory with proper permissions
+RUN mkdir -p .yarn && \
+    chown -R node:node .yarn && \
+    chmod -R 755 .yarn
+
+# Switch to node user
+USER node
+
+# Expose ports if needed
+EXPOSE 3000 4000
+
+# Default command
+CMD ["yarn", "start"]

@@ -1,0 +1,17 @@
+{
+  "name": "ag-grid-challenge",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "bun@1.2.21",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "seed": "bun --cwd backend seed",
+    "setup": "docker-compose -f .devcontainer/docker-compose.yml up -d && bun install && bun seed"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

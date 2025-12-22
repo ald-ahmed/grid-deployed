@@ -1,0 +1,57 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node-postgres
+{
+  "name": "Node.js & PostgreSQL",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+
+  // Use different approach based on environment
+  "overrideCommand": false,
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+  "forwardPorts": [3000, 4000],
+  "portsAttributes": {
+    "3000": {
+      "label": "frontend",
+      "onAutoForward": "openPreview"
+    },
+    "4000": {
+      "label": "backend",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "postAttachCommand": ["bash", ".devcontainer/setup.sh"],
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "ms-vscode.vscode-json",
+        "esbenp.prettier-vscode",
+        "GraphQL.vscode-graphql"
+      ],
+
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.fontSize": 12,
+        "editor.fontSize": 12,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+        "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
+        "typescript.preferences.includePackageJsonAutoImports": "auto",
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/.git": true,
+          "**/.DS_Store": true,
+          "**/yarn.lock": true
+        },
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/yarn.lock": true
+        }
+      }
+    }
+  }
+}
